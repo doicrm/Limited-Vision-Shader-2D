@@ -17,7 +17,7 @@ half4 CombinedShapeLightShared(in SurfaceData2D surfaceData, in InputData2D inpu
         return debugColor;
     }
     #endif
-
+    
     half alpha = surfaceData.alpha;
     half4 color = half4(surfaceData.albedo, alpha);
     const half4 mask = surfaceData.mask;
@@ -75,33 +75,47 @@ half4 CombinedShapeLightShared(in SurfaceData2D surfaceData, in InputData2D inpu
 #endif
 
 #if USE_SHAPE_LIGHT_TYPE_3
-    half4 shapeLight3 = SAMPLE_TEXTURE2D(_ShapeLightTexture3, sampler_ShapeLightTexture3, lightingUV);
+    //half4 shapeLight3 = SAMPLE_TEXTURE2D(_ShapeLightTexture3, sampler_ShapeLightTexture3, lightingUV);
+
+    //if (any(_ShapeLightMaskFilter3))
+    //{
+    //    half4 processedMask = (1 - _ShapeLightInvertedFilter3) * mask + _ShapeLightInvertedFilter3 * (1 - mask);
+    //    shapeLight3 *= dot(processedMask, _ShapeLightMaskFilter3);
+    //}
+
+    //half4 shapeLight3Modulate = shapeLight3 * _ShapeLightBlendFactors3.x;
+    //half4 shapeLight3Additive = shapeLight3 * _ShapeLightBlendFactors3.y;
+    
+    half4 limitedVisionMask = SAMPLE_TEXTURE2D(_ShapeLightTexture3, sampler_ShapeLightTexture3, lightingUV);
 
     if (any(_ShapeLightMaskFilter3))
     {
         half4 processedMask = (1 - _ShapeLightInvertedFilter3) * mask + _ShapeLightInvertedFilter3 * (1 - mask);
-        shapeLight3 *= dot(processedMask, _ShapeLightMaskFilter3);
+        limitedVisionMask *= dot(processedMask, _ShapeLightMaskFilter3);
     }
-
-    half4 shapeLight3Modulate = shapeLight3 * _ShapeLightBlendFactors3.x;
-    half4 shapeLight3Additive = shapeLight3 * _ShapeLightBlendFactors3.y;
+    
+    limitedVisionMask = min(limitedVisionMask, 1);
 #else
-    half4 shapeLight3Modulate = 0;
-    half4 shapeLight3Additive = 0;
+    half4 limitedVisionMask = 1;
 #endif
 
     half4 finalOutput;
 #if !USE_SHAPE_LIGHT_TYPE_0 && !USE_SHAPE_LIGHT_TYPE_1 && !USE_SHAPE_LIGHT_TYPE_2 && ! USE_SHAPE_LIGHT_TYPE_3
     finalOutput = color;
 #else
-    half4 finalModulate = shapeLight0Modulate + shapeLight1Modulate + shapeLight2Modulate + shapeLight3Modulate;
-    half4 finalAdditve = shapeLight0Additive + shapeLight1Additive + shapeLight2Additive + shapeLight3Additive;
+    //half4 finalModulate = shapeLight0Modulate + shapeLight1Modulate + shapeLight2Modulate + shapeLight3Modulate;
+    //half4 finalAdditve = shapeLight0Additive + shapeLight1Additive + shapeLight2Additive + shapeLight3Additive;
+    half4 finalModulate = shapeLight0Modulate + shapeLight1Modulate + shapeLight2Modulate;
+    half4 finalAdditve = shapeLight0Additive + shapeLight1Additive + shapeLight2Additive;
     finalOutput = _HDREmulationScale * (color * finalModulate + finalAdditve);
 #endif
+    //finalOutput.a = alpha;
+    //finalOutput = lerp(color, finalOutput, _UseSceneLighting);
 
-    finalOutput.a = alpha;
+    //return max(0, finalOutput);
+    
+    finalOutput.a = alpha * limitedVisionMask;
     finalOutput = lerp(color, finalOutput, _UseSceneLighting);
-
     return max(0, finalOutput);
 }
 #endif
