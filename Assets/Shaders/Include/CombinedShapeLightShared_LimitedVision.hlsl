@@ -98,6 +98,8 @@ half4 CombinedShapeLightShared(in SurfaceData2D surfaceData, in InputData2D inpu
     
     limitedVisionMask = min(limitedVisionMask, 1);
 #else
+    //half4 shapeLight3Modulate = 0;
+    //half4 shapeLight3Additive = 0;
     half4 limitedVisionMask = 1;
 #endif
 
