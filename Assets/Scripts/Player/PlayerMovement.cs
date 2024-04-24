@@ -13,6 +13,11 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        Move();
+    }
+
+    private void Move()
+    {
         speedX = Input.GetAxisRaw("Horizontal") * moveSpeed;
         speedY = Input.GetAxisRaw("Vertical") * moveSpeed;
         rb.velocity = new Vector2(speedX, speedY);

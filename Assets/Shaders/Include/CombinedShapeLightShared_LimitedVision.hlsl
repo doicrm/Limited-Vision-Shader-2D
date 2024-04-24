@@ -75,16 +75,18 @@ half4 CombinedShapeLightShared(in SurfaceData2D surfaceData, in InputData2D inpu
 #endif
 
 #if USE_SHAPE_LIGHT_TYPE_3
-    //half4 shapeLight3 = SAMPLE_TEXTURE2D(_ShapeLightTexture3, sampler_ShapeLightTexture3, lightingUV);
+    /*
+    half4 shapeLight3 = SAMPLE_TEXTURE2D(_ShapeLightTexture3, sampler_ShapeLightTexture3, lightingUV);
 
-    //if (any(_ShapeLightMaskFilter3))
-    //{
-    //    half4 processedMask = (1 - _ShapeLightInvertedFilter3) * mask + _ShapeLightInvertedFilter3 * (1 - mask);
-    //    shapeLight3 *= dot(processedMask, _ShapeLightMaskFilter3);
-    //}
+    if (any(_ShapeLightMaskFilter3))
+    {
+        half4 processedMask = (1 - _ShapeLightInvertedFilter3) * mask + _ShapeLightInvertedFilter3 * (1 - mask);
+        shapeLight3 *= dot(processedMask, _ShapeLightMaskFilter3);
+    }
 
-    //half4 shapeLight3Modulate = shapeLight3 * _ShapeLightBlendFactors3.x;
-    //half4 shapeLight3Additive = shapeLight3 * _ShapeLightBlendFactors3.y;
+    half4 shapeLight3Modulate = shapeLight3 * _ShapeLightBlendFactors3.x;
+    half4 shapeLight3Additive = shapeLight3 * _ShapeLightBlendFactors3.y;
+    */
     
     half4 limitedVisionMask = SAMPLE_TEXTURE2D(_ShapeLightTexture3, sampler_ShapeLightTexture3, lightingUV);
 
@@ -109,10 +111,12 @@ half4 CombinedShapeLightShared(in SurfaceData2D surfaceData, in InputData2D inpu
     half4 finalAdditve = shapeLight0Additive + shapeLight1Additive + shapeLight2Additive;
     finalOutput = _HDREmulationScale * (color * finalModulate + finalAdditve);
 #endif
-    //finalOutput.a = alpha;
-    //finalOutput = lerp(color, finalOutput, _UseSceneLighting);
+    /*
+    finalOutput.a = alpha;
+    finalOutput = lerp(color, finalOutput, _UseSceneLighting);
 
-    //return max(0, finalOutput);
+    return max(0, finalOutput);
+    */
     
     finalOutput.a = alpha * limitedVisionMask;
     finalOutput = lerp(color, finalOutput, _UseSceneLighting);
