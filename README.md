@@ -1,4 +1,4 @@
-# unity-test-task
+# Limited-Vision-Shader-2D
 Limited vision shader (Darkwood/Among Us vision effect) for Unity engine.
 
 Based on aarthificial's solution (https://github.com/aarthificial/darkwood-vision-effect)
